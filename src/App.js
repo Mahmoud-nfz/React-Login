@@ -1,25 +1,24 @@
 import logo from './logo.svg';
 import './App.css';
+import LoginComponent from './components/LoginComponent';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className='container p-5'>
+        <div className='card w-50 mx-auto'>
+          <div className='card-body'>
+            <LoginComponent/>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
 export default App;
+
+// module.exports = {
+//   LoginComponent,
+//   App
+// }
