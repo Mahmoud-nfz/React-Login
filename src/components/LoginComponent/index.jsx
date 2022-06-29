@@ -1,27 +1,35 @@
 import React from "react";
 import { useState } from "react";
 import bcrypt from "bcryptjs";
+import PropTypes from 'prop-types';
+import { loginUser } from "../../services/Login";
 
 import './style.css';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 // import '../../assets/fontawesome-free-6.1.1-web/css/all.css'
 
-function LoginComponent (){
+function LoginComponent ({setToken}){
     const [email,setEmail] = useState("") ;
     const [pass,setPass] = useState("") ;
     const [errorMessages, setErrorMessages] = useState({});
 
     const salt = bcrypt.genSaltSync(10);
 
-    const handleSubmit = (  ) => {
+    const handleSubmit = async (  ) => {
         // event.preventDefault();
         console.log(email,pass) ;
         const hashedPass = bcrypt.hashSync(pass, '$2a$10$CwTycUXWue0Thq9StjUM0u')
         console.log(hashedPass)
-        if (pass !== "123") {
-            // Invalid password
-            setErrorMessages({ name: "pass", message: "invalid pass" });
-          } 
+        
+        const token = await loginUser({
+            email,
+            pass
+          });
+          setToken(token);
+        if(!token){
+            setErrorMessages({name:"pass",message:"invalid pass"});
+        }
+      
     }
     
     const renderErrorMessage = (name) =>
@@ -85,3 +93,7 @@ function LoginComponent (){
 }
 
 export default LoginComponent;
+
+LoginComponent.propTypes = {
+    setToken: PropTypes.func.isRequired
+}
