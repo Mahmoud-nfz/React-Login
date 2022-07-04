@@ -1,6 +1,8 @@
 import logo from './logo.svg';
 import './App.css';
+import { Routes, BrowserRouter, Route } from 'react-router-dom';
 import LoginComponent from './components/LoginComponent';
+import SignUpComponent from './components/SignUpComponent';
 import useToken from './hooks/useToken';
 
 function setToken(userToken) {
@@ -14,7 +16,7 @@ function getToken() {
 }
 
 function App() {
-  const { token, setToken } = useToken();
+  const { token, setToken } = useToken(localStorage);
   console.log(token) ;
   
   return (
@@ -22,7 +24,13 @@ function App() {
       <div className='container p-5'>
         <div className='card w-50 mx-auto'>
           <div className='card-body'>
-            <LoginComponent setToken={setToken}/>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<LoginComponent setToken={setToken} loginUrl='http://localhost:8000/login' callbackOnSignIn={()=>{}} />}/>
+              <Route path="/signup" element={<SignUpComponent setToken={setToken} loginUrl='http://localhost:8000/signup' callbackOnSignIn={()=>{}} />}/>
+            </Routes>
+          </BrowserRouter>
+            
           </div>
         </div>
       </div>

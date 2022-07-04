@@ -3,15 +3,19 @@ import { useState } from "react";
 import bcrypt from "bcryptjs";
 import PropTypes from 'prop-types';
 import { loginUser } from "../../services/Login";
+import { validateEmail, validatePass } from "../../services/validators";
 
 import './style.css';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 // import '../../assets/fontawesome-free-6.1.1-web/css/all.css'
 
-function LoginComponent ({setToken, loginUrl,callbackOnSignIn}){
+function SignUpComponent ({fields,setToken, loginUrl,callbackOnSignIn}){
     const [email,setEmail] = useState("") ;
     const [pass,setPass] = useState("") ;
     const [errorMessages, setErrorMessages] = useState({});
+    const [isValidEmail,setIsValidEmail] = useState(false) ;
+    const [isValidPass,setIsValidPass] = useState(false) ;
+
     const salt = bcrypt.genSaltSync(10);
 
     const handleSubmit = async (  ) => {
@@ -37,8 +41,9 @@ function LoginComponent ({setToken, loginUrl,callbackOnSignIn}){
 
     const handleChangeEmail = (event) => {
         setEmail(event.target.value) ;
-        const res = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        console.log(res.test(String(email).toLowerCase())) ;
+        const res = validateEmail(event.target.value) ;
+        setIsValidEmail(res.verdict) ;
+        
         if(!res.test(String(email).toLowerCase()))
             setErrorMessages({name:"email",message:"email invalid"});
         else
@@ -47,6 +52,9 @@ function LoginComponent ({setToken, loginUrl,callbackOnSignIn}){
 
     const handleChangePass = (event) => {
         setPass(event.target.value) ;
+
+        console.log(event.target.value)
+        console.log(/\d+/.test(event.target.value)) ;
     }
     
     const renderErrorMessage = (name) =>
@@ -54,9 +62,11 @@ function LoginComponent ({setToken, loginUrl,callbackOnSignIn}){
             <div className="error alert-danger">{errorMessages.message}</div>
         );
     
-    const renderDiv = (msg,condition) =>(
-            <div className={condition?"alert alert-success" :"alert alert-danger"}>{msg}</div>
-        );
+    const renderDiv = (msg,condition,pass) =>{
+        if(pass !== "")
+            return <div className={condition?"alert alert-success" :"alert alert-danger"}>{condition ? "✓ "+msg : "❌ " +msg}</div>
+        return <div></div>
+    };
 
 
     return (
@@ -72,6 +82,11 @@ function LoginComponent ({setToken, loginUrl,callbackOnSignIn}){
                     <label className="form-label" htmlFor="form2Example2">Password : </label>
                     <input value={pass} type="password" name="pass" id="form2Example2" className="form-control" onChange={handleChangePass} />
                 </div>
+                {renderDiv("minimum 8 characters",passLenValid,pass)}
+                {renderDiv("at least one uppercase letter",passUpperValid,pass)}
+                {renderDiv("at least one lowercase letter",passLowerValid,pass)}
+                {renderDiv("at least one number",passNumValid,pass)}
+                {renderErrorMessage("pass")}
                 
                 <div className="row mb-4">
                     <div className="col d-flex justify-content-center">
@@ -113,12 +128,15 @@ function LoginComponent ({setToken, loginUrl,callbackOnSignIn}){
 }
 
 
-LoginComponent.defaultProps = {
-    title:"Home Title"
+SignUpComponent.defaultProps = {
+    fields : {
+        "email" : validateEmail,
+        "password" : validatePass
+    }
 }
 
-export default LoginComponent;
+export default SignUpComponent;
 
-LoginComponent.propTypes = {
+SignUpComponent.propTypes = {
     setToken: PropTypes.func.isRequired
 }

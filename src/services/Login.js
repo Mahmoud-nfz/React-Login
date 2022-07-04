@@ -1,6 +1,6 @@
 
-export async function loginUser(credentials) {
-    return fetch('http://localhost:8000/login', {
+export async function loginUser(credentials,url) {
+    return fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
