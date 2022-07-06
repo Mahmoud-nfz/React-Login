@@ -42,11 +42,9 @@ function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
         // console.log(errors[fieldName]) ;
         // console.log(formComponents) ;
         setErrorMessages(errors) ;
-        console.log(errorMessages)
         setee(Math.random()) ;
         // setFormComponents(formComponents) ;
     }
-
 
     useEffect(() => {
         let i = 0 ;
@@ -59,37 +57,15 @@ function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
                 "value" : "",
                 "validator" : validator 
             }
-            setInputFields(temp);
-
-
-            const res = temp[fieldName].validator(temp[fieldName].value) ;
-            let e = errorMessages ;
-            e[fieldName] = [] ;
-            for(let check in res.checks){
-                e[fieldName].push(renderDiv(check,res.checks[check]))
-            }
-            setErrorMessages(e) ;
-
-            tempFormComponents.push(
-                <div key={i++}>
-                    <div className="form-outline mb-4">
-                        <label className="form-label" htmlFor={fieldName}> {fieldName} </label>
-                        <input type="text" name={fieldName} id={fieldName} className="form-control" onChange={(event) => {handleChangeField(event,fieldName)}} />
-                    </div>
-                    {errorMessages[fieldName]}
-                </div>
-            )
-            
+            setInputFields(temp);            
         }
-        setFormComponents(tempFormComponents)
+        setee(Math.random()) ;
     },[])
 
     useEffect(() => {
-        console.log("here")
         const tempFormComponents = []
         let i = 0 ;
         for(let [fname, field] of Object.entries(inputFields)){
-            // console.log(field) ;
 
             const res = field.validator(field.value) ;
             let e = errorMessages ;
@@ -140,7 +116,6 @@ function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
       
     }
     
-    console.log(formComponents) ;
     
     return (
         <div className="container p-3">
