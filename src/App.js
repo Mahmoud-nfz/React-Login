@@ -27,8 +27,8 @@ function App() {
           <div className='card-body'>
           <BrowserRouter>
             <Routes>
-              <Route path="/login" element={<LoginComponent setToken={setToken} loginUrl='http://localhost:8000/login' callbackOnSignIn={()=>{}} />}/>
-              <Route path="/signup" element={<SignUpComponent setToken={setToken} loginUrl='http://localhost:8000/signup' callbackOnSignIn={()=>{}} />}/>
+              <Route path="/login" element={<LoginComponent setToken={setToken} loginUrl='http://localhost:8001/login' callbackOnSignIn={()=>{}} />}/>
+              <Route path="/signup" element={<SignUpComponent setToken={setToken} loginUrl='http://localhost:8000/register' callbackOnSignUp={()=>{}} />}/>
               <Route path="/test" element={<TestComponent/>} />
               <Route path="*" element={<Navigate to="/signup" replace />}/>
             </Routes>

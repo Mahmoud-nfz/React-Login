@@ -5,8 +5,6 @@ import PropTypes from 'prop-types';
 import { loginUser } from "../../services/Login";
 
 import './style.css';
-// import 'bootstrap/dist/css/bootstrap.min.css';
-// import '../../assets/fontawesome-free-6.1.1-web/css/all.css'
 
 function LoginComponent ({setToken, loginUrl,callbackOnSignIn}){
     const [email,setEmail] = useState("") ;
@@ -17,8 +15,8 @@ function LoginComponent ({setToken, loginUrl,callbackOnSignIn}){
     const handleSubmit = async (  ) => {
         // event.preventDefault();
         console.log(email,pass) ;
-        const hashedPass = bcrypt.hashSync(pass, '$2a$10$CwTycUXWue0Thq9StjUM0u')
-        console.log(hashedPass)
+        // const hashedPass = bcrypt.hashSync(pass, '$2a$10$CwTycUXWue0Thq9StjUM0u')
+        // console.log(hashedPass)
         
         const token = await loginUser({
             "email" : email,
@@ -54,9 +52,6 @@ function LoginComponent ({setToken, loginUrl,callbackOnSignIn}){
             <div className="error alert-danger">{errorMessages.message}</div>
         );
     
-    const renderDiv = (msg,condition) =>(
-            <div className={condition?"alert alert-success" :"alert alert-danger"}>{msg}</div>
-        );
 
 
     return (

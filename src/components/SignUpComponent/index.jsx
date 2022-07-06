@@ -1,13 +1,11 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import bcrypt from "bcryptjs";
 import PropTypes from 'prop-types';
-import { loginUser } from "../../services/Login";
+import { registerUser } from "../../services/SignUp";
 import { validateEmail, validatePass } from "../../services/validators";
 
 import './style.css';
-// import 'bootstrap/dist/css/bootstrap.min.css';
-// import '../../assets/fontawesome-free-6.1.1-web/css/all.css'
 
 function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
     const [errorMessages, setErrorMessages] = useState({});
@@ -18,8 +16,9 @@ function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
     // };
 
     const [formComponents,setFormComponents] = useState([]) ;
-    const [inputFields,setInputFields] = useState({})
+    const [inputFields,setInputFields] = useState({});
     const [ee,setee] = useState() ;
+    const [submitError,setSubmitError] = useState() ;
 
     const renderDiv = (msg,condition) => {
         return <div className={condition?"alert alert-success" :"alert alert-danger"}>{condition ? "✓ "+msg : "❌ " +msg}</div>
@@ -37,18 +36,14 @@ function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
         for(let check in res.checks){
             errors[fieldName].push(renderDiv(check,res.checks[check]))
         }
-        // console.log(res.checks) ;
-        // console.log(errorMessages[fieldName]) ;
-        // console.log(errors[fieldName]) ;
-        // console.log(formComponents) ;
         setErrorMessages(errors) ;
         setee(Math.random()) ;
-        // setFormComponents(formComponents) ;
+        if(submitError){
+            setSubmitError(null) ;
+        }
     }
 
     useEffect(() => {
-        let i = 0 ;
-        const tempFormComponents = [] ;
         for(let [fieldName,validator] of Object.entries(fields)){
 
             let temp = inputFields ;
@@ -79,7 +74,7 @@ function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
                 <div key={i++}>
                     <div className="form-outline mb-4">
                         <label className="form-label" htmlFor={field.name}> {field.name} </label>
-                        <input type="text" name={field.name} id={field.name} className="form-control" onChange={(event) => {handleChangeField(event,field.name)}} />
+                        <input type={(["password","confirmPassword"].includes(field.name) ) ? "password" : "text"} name={field.name} id={field.name} className="form-control" onChange={(event) => {handleChangeField(event,field.name)}} />
                     </div>
                     {errorMessages[field.name]}
                 </div>
@@ -89,31 +84,39 @@ function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
         setFormComponents(tempFormComponents)
     },[ee])
     
-
-    // const [isValidEmail,setIsValidEmail] = useState(false) ;
-    // const [isValidPass,setIsValidPass] = useState(false) ;
-
     // const salt = bcrypt.genSaltSync(10);
 
     const handleSubmit = async (  ) => {
+        console.log("submitted")
+
         // // event.preventDefault();
-        // console.log(email,pass) ;
-        // const hashedPass = bcrypt.hashSync(pass, '$2a$10$CwTycUXWue0Thq9StjUM0u')
+        
+        const data = {} ;
+
+        console.log(inputFields) ;
+
+
+        for(let [fname,field] of Object.entries(inputFields)){
+            if(!field.validator(field.value).verdict){
+                setSubmitError(renderDiv("invalid field responses",false)) ;
+                return ;
+            }
+            data[fname] = field.value ;
+        }
+
+        // const hashedPass = bcrypt.hashSync(pass, salt)
         // console.log(hashedPass)
         
-        // const token = await loginUser({
-        //     "email" : email,
-        //     "password" : pass
-        //   },loginUrl);
-        //   setToken(token);
+        const token = await registerUser(data,loginUrl);
+        setToken(token);
+        
         // if(!token){
         //     setErrorMessages({name:"pass",message:"invalid pass"});
         // }
         // else{
         //     console.log(token) ;
         //     callbackOnSignIn() ;
-        // }
-      
+        // }      
     }
     
     
@@ -138,6 +141,8 @@ function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
                 </div>
 
                 <button type="button" className="btn btn-primary btn-block mb-4" onClick={handleSubmit}>Sign in</button>
+
+                {submitError}
 
                 <div className="text-center">
                     <p>Not a member? <a href="#!">Register</a></p>
@@ -167,7 +172,10 @@ function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
 SignUpComponent.defaultProps = {
     fields : {
         "email" : validateEmail,
-        "password" : validatePass
+        "password" : validatePass,
+        "confirmPassword" : (input) => ({verdict : true, cheks : {}}),
+        "ddzcxasdsasdas" : (input) => ({verdict : true, cheks : {}}),
+        "etwyut" : (input) => ({verdict : true, cheks : {}}) 
     }
 }
 
