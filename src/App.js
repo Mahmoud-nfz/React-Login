@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-import { Routes, BrowserRouter, Route } from 'react-router-dom';
+import { Routes, BrowserRouter, Route, Navigate } from 'react-router-dom';
 import LoginComponent from './components/LoginComponent';
 import SignUpComponent from './components/SignUpComponent';
 import TestComponent from './components/TestComponent';
@@ -30,6 +30,7 @@ function App() {
               <Route path="/login" element={<LoginComponent setToken={setToken} loginUrl='http://localhost:8000/login' callbackOnSignIn={()=>{}} />}/>
               <Route path="/signup" element={<SignUpComponent setToken={setToken} loginUrl='http://localhost:8000/signup' callbackOnSignIn={()=>{}} />}/>
               <Route path="/test" element={<TestComponent/>} />
+              <Route path="*" element={<Navigate to="/signup" replace />}/>
             </Routes>
           </BrowserRouter>
             

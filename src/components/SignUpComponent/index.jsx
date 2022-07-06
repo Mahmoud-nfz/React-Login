@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import bcrypt from "bcryptjs";
 import PropTypes from 'prop-types';
@@ -11,8 +11,15 @@ import './style.css';
 
 function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
     const [errorMessages, setErrorMessages] = useState({});
+    // const errorMessagesRef = useRef(errorMessages) ;
+    // const setErrorMessages = data => {
+    //     errorMessages = data;
+    //     _setErrorMessages(data);
+    // };
+
     const [formComponents,setFormComponents] = useState([]) ;
     const [inputFields,setInputFields] = useState({})
+    const [ee,setee] = useState() ;
 
     const renderDiv = (msg,condition) => {
         return <div className={condition?"alert alert-success" :"alert alert-danger"}>{condition ? "✓ "+msg : "❌ " +msg}</div>
@@ -22,7 +29,7 @@ function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
         let temp = inputFields ;
         temp[fieldName].value = event.target.value ;
         setInputFields(temp);
-
+        
         const res = inputFields[fieldName].validator(event.target.value) ;
 
         const errors = errorMessages ;
@@ -30,11 +37,14 @@ function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
         for(let check in res.checks){
             errors[fieldName].push(renderDiv(check,res.checks[check]))
         }
-        console.log(res.checks) ;
-        console.log(errorMessages[fieldName]) ;
-        console.log(errors[fieldName]) ;
-        console.log(formComponents) ;
+        // console.log(res.checks) ;
+        // console.log(errorMessages[fieldName]) ;
+        // console.log(errors[fieldName]) ;
+        // console.log(formComponents) ;
         setErrorMessages(errors) ;
+        console.log(errorMessages)
+        setee(Math.random()) ;
+        // setFormComponents(formComponents) ;
     }
 
 
@@ -50,6 +60,16 @@ function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
                 "validator" : validator 
             }
             setInputFields(temp);
+
+
+            const res = temp[fieldName].validator(temp[fieldName].value) ;
+            let e = errorMessages ;
+            e[fieldName] = [] ;
+            for(let check in res.checks){
+                e[fieldName].push(renderDiv(check,res.checks[check]))
+            }
+            setErrorMessages(e) ;
+
             tempFormComponents.push(
                 <div key={i++}>
                     <div className="form-outline mb-4">
@@ -64,6 +84,34 @@ function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
         setFormComponents(tempFormComponents)
     },[])
 
+    useEffect(() => {
+        console.log("here")
+        const tempFormComponents = []
+        let i = 0 ;
+        for(let [fname, field] of Object.entries(inputFields)){
+            // console.log(field) ;
+
+            const res = field.validator(field.value) ;
+            let e = errorMessages ;
+            e[field.name] = [] ;
+            for(let check in res.checks){
+                e[field.name].push(renderDiv(check,res.checks[check]))
+            }
+            setErrorMessages(e) ;
+
+            tempFormComponents.push(
+                <div key={i++}>
+                    <div className="form-outline mb-4">
+                        <label className="form-label" htmlFor={field.name}> {field.name} </label>
+                        <input type="text" name={field.name} id={field.name} className="form-control" onChange={(event) => {handleChangeField(event,field.name)}} />
+                    </div>
+                    {errorMessages[field.name]}
+                </div>
+            )
+            
+        }
+        setFormComponents(tempFormComponents)
+    },[ee])
     
 
     // const [isValidEmail,setIsValidEmail] = useState(false) ;
@@ -91,24 +139,6 @@ function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
         // }
       
     }
-
-    // const handleChangeEmail = (event) => {
-    //     setEmail(event.target.value) ;
-    //     const res = validateEmail(event.target.value) ;
-    //     setIsValidEmail(res.verdict) ;
-        
-    //     if(!res.verdict)
-    //         setErrorMessages({name:"email",message:"email invalid"});
-    //     else
-    //         setErrorMessages({})
-    // }
-
-    // const handleChangePass = (event) => {
-    //     setPass(event.target.value) ;
-
-    //     console.log(event.target.value)
-    //     console.log(/\d/.test(event.target.value)) ;
-    // }
     
     console.log(formComponents) ;
     

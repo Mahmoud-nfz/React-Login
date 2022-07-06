@@ -1,8 +1,8 @@
 function validateEmail(input){
     const res = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     const checks = {} ;
-    checks["is a valid email adress"] =  res.test(String(email).toLowerCase()) ;
-    let verdict = res.test(String(email).toLowerCase()) ;
+    checks["is a valid email adress"] =  res.test(String(input).toLowerCase()) ;
+    let verdict = res.test(String(input).toLowerCase()) ;
     return {
         verdict,
         checks 
