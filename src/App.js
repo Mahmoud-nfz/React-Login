@@ -3,6 +3,7 @@ import './App.css';
 import { Routes, BrowserRouter, Route } from 'react-router-dom';
 import LoginComponent from './components/LoginComponent';
 import SignUpComponent from './components/SignUpComponent';
+import TestComponent from './components/TestComponent';
 import useToken from './hooks/useToken';
 
 function setToken(userToken) {
@@ -28,6 +29,7 @@ function App() {
             <Routes>
               <Route path="/login" element={<LoginComponent setToken={setToken} loginUrl='http://localhost:8000/login' callbackOnSignIn={()=>{}} />}/>
               <Route path="/signup" element={<SignUpComponent setToken={setToken} loginUrl='http://localhost:8000/signup' callbackOnSignIn={()=>{}} />}/>
+              <Route path="/test" element={<TestComponent/>} />
             </Routes>
           </BrowserRouter>
             
