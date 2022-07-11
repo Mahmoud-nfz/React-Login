@@ -4,10 +4,11 @@ import bcrypt from "bcryptjs";
 import PropTypes from 'prop-types';
 import { registerUser } from "../../services/SignUp";
 import { validateEmail, validatePass } from "../../services/validators";
+import {Helmet} from "react-helmet" ;
 
 import './style.css';
 
-function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
+function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn,authPolicies}){
     const [errorMessages, setErrorMessages] = useState({});
     // const errorMessagesRef = useRef(errorMessages) ;
     // const setErrorMessages = data => {
@@ -122,6 +123,13 @@ function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
     
     return (
         <div className="container p-3">
+            <Helmet>
+                <title>SignUp</title>
+                {authPolicies.map((element) => (element.meta))}
+            </Helmet>
+
+            {authPolicies.map((element) => (element.srcScript))}
+
             <form onSubmit={handleSubmit}>
                 <div>
                     {formComponents}
@@ -145,9 +153,12 @@ function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
                 {submitError}
 
                 <div className="text-center">
-                    <p>Not a member? <a href="#!">Register</a></p>
+                    <p>Already registered? <a href="#!">Login</a></p>
                     <p>or sign up with:</p>
-                    <button type="button" className="btn btn-link btn-floating mx-1">
+
+                    {authPolicies.map((element,index) => (<div key={index}>{element.component}</div> ))}
+
+                    {/* <button type="button" className="btn btn-link btn-floating mx-1">
                     <i className="fab fa-facebook-f"></i>
                     </button>
 
@@ -161,7 +172,7 @@ function SignUpComponent ({fields,setToken,loginUrl,callbackOnSignIn}){
 
                     <button type="button" className="btn btn-link btn-floating mx-1">
                     <i className="fab fa-github"></i>
-                    </button>
+                    </button> */}
                 </div>
             </form>
         </div>
@@ -173,10 +184,25 @@ SignUpComponent.defaultProps = {
     fields : {
         "email" : validateEmail,
         "password" : validatePass,
-        "confirmPassword" : (input) => ({verdict : true, cheks : {}}),
-        "ddzcxasdsasdas" : (input) => ({verdict : true, cheks : {}}),
-        "etwyut" : (input) => ({verdict : true, cheks : {}}) 
-    }
+        // "confirmPassword" : (input) => ({verdict : true, cheks : {}}),
+        // "ddzcxasdsasdas" : (input) => ({verdict : true, cheks : {}}),
+        // "etwyut" : (input) => ({verdict : true, cheks : {}}) 
+    },
+    authPolicies : [
+        {
+            name : "google",
+            srcScript : <script key={"google"} src="https://apis.google.com/js/platform.js" async defer></script> ,
+            meta : <meta key={"google"} name="google-signin-client_id" content="YOUR_CLIENT_ID.apps.googleusercontent.com"></meta> ,
+            component : <div className="g-signin2" data-onsuccess="onSignIn"></div> ,
+            onSignIn : function onSignIn(googleUser) {
+                var profile = googleUser.getBasicProfile();
+                console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+                console.log('Name: ' + profile.getName());
+                console.log('Image URL: ' + profile.getImageUrl());
+                console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+            } ,
+        }
+    ]
 }
 
 export default SignUpComponent;
