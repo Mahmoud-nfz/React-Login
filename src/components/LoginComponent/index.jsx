@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import bcrypt from "bcryptjs";
 import PropTypes from 'prop-types';
@@ -10,26 +10,31 @@ function LoginComponent ({setToken, loginUrl,callbackOnSignIn}){
     const [email,setEmail] = useState("") ;
     const [pass,setPass] = useState("") ;
     const [errorMessages, setErrorMessages] = useState({});
+    const [ee,setee] = useState() ;
     const salt = bcrypt.genSaltSync(10);
 
     const handleSubmit = async (  ) => {
         // event.preventDefault();
-        console.log(email,pass) ;
         // const hashedPass = bcrypt.hashSync(pass, '$2a$10$CwTycUXWue0Thq9StjUM0u')
         // console.log(hashedPass)
         
-        const token = await loginUser({
+        const response = await loginUser({
             "email" : email,
             "password" : pass
           },loginUrl);
-          setToken(token);
+        const token = response.token ;
+
         if(!token){
-            setErrorMessages({name:"pass",message:"invalid pass"});
-        }
+            console.log("here");
+            let temp = errorMessages ;
+            temp.pass = <div className="error alert-danger">invalid pass</div> ;
+            setErrorMessages(temp);
+            setee(Math.random()) ;
+        } 
         else{
-            console.log(token) ;
+            setToken(token);
             callbackOnSignIn() ;
-        }
+        } 
       
     }
 
@@ -37,23 +42,29 @@ function LoginComponent ({setToken, loginUrl,callbackOnSignIn}){
         setEmail(event.target.value) ;
         const res = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         console.log(res.test(String(email).toLowerCase())) ;
+        let temp = errorMessages ;
         if(!res.test(String(email).toLowerCase()))
-            setErrorMessages({name:"email",message:"email invalid"});
+            temp.email = renderErrorMessage("email invalid");
         else
-            setErrorMessages({})
-    }
+            temp.email = <></> ;
+        temp.pass = <></> ;
+        setErrorMessages(temp) ;
+    } 
+
 
     const handleChangePass = (event) => {
+        let temp = errorMessages ;
+        temp.pass = <></> ; 
+        setErrorMessages(temp) ;
         setPass(event.target.value) ;
     }
     
-    const renderErrorMessage = (name) =>
-        name === errorMessages.name && (
-            <div className="error alert-danger">{errorMessages.message}</div>
+    const renderErrorMessage = (msg) =>
+        (
+            <div className="error alert-danger">{msg}</div>
         );
     
-
-
+ 
     return (
         <div className="container p-3">
             <form onSubmit={handleSubmit}>
@@ -61,12 +72,13 @@ function LoginComponent ({setToken, loginUrl,callbackOnSignIn}){
                     <label className="form-label" htmlFor="form2Example1">Email address : </label>
                     <input value={email} type="email" name="email" id="form2Example1" className="form-control" onChange={handleChangeEmail} />
                 </div>
-                {renderErrorMessage("email")}
+                {errorMessages.email}
 
                 <div className="form-outline mb-4">
                     <label className="form-label" htmlFor="form2Example2">Password : </label>
                     <input value={pass} type="password" name="pass" id="form2Example2" className="form-control" onChange={handleChangePass} />
                 </div>
+                {errorMessages.pass}
                 
                 <div className="row mb-4">
                     <div className="col d-flex justify-content-center">
@@ -109,7 +121,9 @@ function LoginComponent ({setToken, loginUrl,callbackOnSignIn}){
 
 
 LoginComponent.defaultProps = {
-    title:"Home Title"
+    setToken : userToken => {
+        localStorage.setItem('token', JSON.stringify(userToken));
+      }
 }
 
 export default LoginComponent;
